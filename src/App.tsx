@@ -17,7 +17,7 @@ function HomePage() {
       <BookingForm />
       <Map />
       <footer className="py-12 text-center text-gray-400 text-sm font-medium flex flex-col items-center gap-4">
-        <p>© {new Date().getFullYear()} Nail Studio. Все права защищены.</p>
+        <p>© {new Date().getFullYear()} Nail Studio. Все права защищены. (v1.1)</p>
         <Link to="/admin" className="text-gray-300 hover:text-deep-pink transition-colors">Вход для мастера</Link>
       </footer>
     </div>
