@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -18,7 +18,7 @@ function HomePage() {
       <Map />
       <footer className="py-12 text-center text-gray-400 text-sm font-medium flex flex-col items-center gap-4">
         <p>© {new Date().getFullYear()} Nail Studio. Все права защищены.</p>
-        <a href="/admin" className="text-gray-300 hover:text-deep-pink transition-colors">Вход для мастера</a>
+        <Link to="/admin" className="text-gray-300 hover:text-deep-pink transition-colors">Вход для мастера</Link>
       </footer>
     </div>
   );
