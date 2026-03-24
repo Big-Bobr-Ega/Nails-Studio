@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: bookings
+    // Document ID: auto-generated
+    // Fields:
+    //   - date: string (required, YYYY-MM-DD)
+    //   - time: string (required, HH:mm)
+    //   - clientName: string (required, 1-100 chars)
+    //   - clientPhone: string (required, 10-20 chars)
+    //   - serviceId: string (required)
+    //   - status: string (optional, pending/completed)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: settings
+    // Document ID: schedule
+    // Fields:
+    //   - workingHours: list of maps (start: string, end: string)
+    //   - offDays: list of strings (YYYY-MM-DD)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "Egoromanov2005@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll(['date', 'time', 'clientName', 'clientPhone', 'serviceId', 'createdAt']) &&
+             data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+             data.time is string && data.time.matches('^\\d{2}:\\d{2}$') &&
+             data.clientName is string && data.clientName.size() > 0 && data.clientName.size() <= 100 &&
+             data.clientPhone is string && data.clientPhone.size() >= 10 && data.clientPhone.size() <= 20 &&
+             data.serviceId is string &&
+             data.createdAt is timestamp &&
+             (!('status' in data) || (data.status is string && data.status in ['pending', 'completed']));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /bookings/{bookingId} {
+      // Admin can do everything
+      // Clients can only list bookings to check availability (must use a limit)
+      allow list: if isAdmin() || (request.query.limit <= 100);
+      allow get: if isAdmin();
+      
+      // Anyone can create a booking if it's valid
+      allow create: if isValidBooking(request.resource.data);
+      
+      // Only admin can update or delete bookings
+      allow update, delete: if isAdmin();
+    }
+
+    match /settings/schedule {
+      // Anyone can read the schedule to know when the master is working
+      allow read: if true;
+      
+      // Only admin can update the schedule
+      allow write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}

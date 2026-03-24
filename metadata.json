@@ -1,0 +1,5 @@
+{
+  "name": "Nail Studio - Запись к мастеру",
+  "description": "Современный и минималистичный сайт для записи на маникюр с удобной админ-панелью.",
+  "requestFramePermissions": ["geolocation"]
+}

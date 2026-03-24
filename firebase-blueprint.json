@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "Booking": {
+      "title": "Booking",
+      "description": "A booking for a nail service.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date", "description": "The date of the booking (YYYY-MM-DD)" },
+        "time": { "type": "string", "description": "The time of the booking (HH:mm)" },
+        "clientName": { "type": "string", "description": "The name of the client" },
+        "clientPhone": { "type": "string", "description": "The phone number of the client" },
+        "serviceId": { "type": "string", "description": "The ID of the service" },
+        "status": { "type": "string", "description": "The status of the booking (pending, completed)", "enum": ["pending", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the booking was created" }
+      },
+      "required": ["date", "time", "clientName", "clientPhone", "serviceId", "createdAt"]
+    },
+    "Schedule": {
+      "title": "Schedule",
+      "description": "The master's working hours and off days.",
+      "type": "object",
+      "properties": {
+        "workingHours": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "string" },
+              "end": { "type": "string" }
+            },
+            "required": ["start", "end"]
+          }
+        },
+        "offDays": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "User": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["role"]
+    }
+  },
+  "firestore": {
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Collection of all bookings."
+    },
+    "/settings/schedule": {
+      "schema": "Schedule",
+      "description": "Master's schedule settings."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and roles."
+    }
+  }
+}
